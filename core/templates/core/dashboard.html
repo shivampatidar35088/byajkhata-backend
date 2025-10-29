@@ -1,0 +1,206 @@
+
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - ByajKhata</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="manifest" href="{% static 'manifest.json' %}">
+<meta name="theme-color" content="#0d6efd">
+
+  <style>
+    body {
+      background: linear-gradient(180deg, #f3f6ff 0%, #ffffff 100%);
+      font-family: 'Segoe UI', sans-serif;
+      padding-top: 80px;
+      color: #333;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: linear-gradient(90deg, #007bff, #0047ab);
+    }
+    .navbar-brand {
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .nav-link {
+      color: #e9ecef !important;
+      margin-right: 8px;
+      transition: 0.3s ease;
+    }
+    .nav-link:hover,
+    .nav-link.active {
+      color: #fff !important;
+      background: rgba(255,255,255,0.2);
+      border-radius: 8px;
+      padding-inline: 12px;
+    }
+
+    /* Cards */
+    .card {
+      border-radius: 1.2rem;
+      border: none;
+      box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.08);
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+
+    .card-header {
+      border-top-left-radius: 1.2rem;
+      border-top-right-radius: 1.2rem;
+    }
+
+    /* Net Balance Card */
+    .balance-card {
+      background: linear-gradient(135deg, #007bff, #00c6ff);
+      color: #fff;
+    }
+    .balance-card h5 {
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+    .balance-card .card-body h4 {
+      font-weight: 700;
+      margin: 4px 0;
+    }
+
+    /* Contact List */
+    .list-group-item {
+      border: none;
+      border-bottom: 1px solid #f1f1f1;
+      padding: 14px 18px;
+      transition: all 0.2s ease;
+    }
+
+    .list-group-item:hover {
+      background-color: #f8f9fa;
+      transform: translateX(3px);
+    }
+
+    .text-success {
+      color: #198754 !important;
+    }
+
+    .text-danger {
+      color: #dc3545 !important;
+    }
+
+    .btn-outline-light {
+      border-radius: 8px;
+      font-weight: 500;
+    }
+
+    /* Empty State */
+    .empty {
+      padding: 2rem;
+      color: #888;
+      font-style: italic;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="{% url 'dashboard' %}">🪙 ByajKhata</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+              Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'add_contact' %}active{% endif %}" href="{% url 'add_contact' %}">
+              Add Contact
+            </a>
+          </li>
+          <li class="nav-item">
+            <form action="{% url 'logout' %}" method="post" class="d-inline ms-2">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-light btn-sm px-3">
+                Logout
+              </button>
+            </form>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Net Balance Section -->
+  <div class="container mt-4">
+    <div class="card balance-card shadow-sm mb-4 text-center">
+      <div class="card-body py-4">
+        <h5>Net Balance Summary</h5>
+        <div class="d-flex justify-content-around mt-3">
+          <div>
+            <h6 class="fw-normal text-light">You'll Get</h6>
+            <h4>₹{{ total_get }}</h4>
+          </div>
+          <div class="vr bg-light mx-3" style="opacity: 0.5; height: 50px;"></div>
+          <div>
+            <h6 class="fw-normal text-light">You'll Give</h6>
+            <h4>₹{{ total_give }}</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact List -->
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">📇 All Contacts</h5>
+        <small class="fw-light">{{ contacts|length }} Total</small>
+      </div>
+
+      <div class="list-group list-group-flush">
+        {% for contact in contacts %}
+        <a href="{% url 'contact_detail' contact.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+          <div>
+            <strong class="d-block">{{ contact.name }}</strong>
+            <small class="text-muted">{{ contact.phone }}</small>
+          </div>
+
+          <div class="text-end">
+            {% if contact.balance > 0 %}
+              <span class="text-success fw-bold">₹{{ contact.balance }}</span><br>
+              <small class="text-success">You'll Get</small>
+            {% elif contact.balance < 0 %}
+              <span class="text-danger fw-bold">₹{{ contact.balance|abs }}</span><br>
+              <small class="text-danger">You'll Give</small>
+            {% else %}
+              <small class="text-muted">Settled</small>
+            {% endif %}
+          </div>
+        </a>
+        {% empty %}
+        <div class="empty text-center">No contacts yet. Add your first one!</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register("{% static 'serviceworker.js' %}")
+  .then(reg => console.log("Service Worker Registered ✅", reg))
+  .catch(err => console.log("SW registration failed:", err));
+}
+</script>
+
+</body>
+</html>

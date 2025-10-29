@@ -1,0 +1,69 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Delete Contact - ByajKhata</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    body {
+      background-color: #f5f7fa;
+      font-family: 'Segoe UI', sans-serif;
+      padding-top: 80px; /* space for fixed navbar */
+    }
+    .card {
+      border-radius: 1rem;
+      box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+    }
+    .navbar-brand {
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🌟 Fixed Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'dashboard' %}">🪙 ByajKhata</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'add_contact' %}active{% endif %}" href="{% url 'add_contact' %}">Add Contact</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 🗑 Delete Confirmation Card -->
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card shadow-sm text-center p-4">
+          <h3 class="mb-3">Delete Contact</h3>
+          <p>Are you sure you want to delete <strong>{{ contact.name }}</strong>?</p>
+          <form method="post">
+            {% csrf_token %}
+            <div class="d-flex justify-content-center gap-3 mt-3">
+              <button type="submit" class="btn btn-danger btn-lg">Yes, Delete</button>
+              <a href="{% url 'contact_detail' contact.pk %}" class="btn btn-secondary btn-lg">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
