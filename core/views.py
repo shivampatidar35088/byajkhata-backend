@@ -4,6 +4,7 @@ from .forms import ContactForm, TransactionForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.db.models import Q
+from django.views.decorators.csrf import csrf_exempt
 
 
 
@@ -112,6 +113,7 @@ def register_view(request):
         form = UserCreationForm()
     return render(request, 'core/register.html', {'form': form})
 
+@csrf_exempt
 
 def login_view(request):
     if request.method == "POST":

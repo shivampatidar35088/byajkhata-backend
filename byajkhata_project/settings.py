@@ -74,19 +74,19 @@ CORS_ALLOW_METHODS = [
     'POST',
     'PUT',
 ]
-
-# ✅ CSRF Settings
-CSRF_TRUSTED_ORIGINS = [
-    'https://byajkhata-backend.onrender.com',
-    'https://byajkhata-frontend.web.app',
-    'http://localhost',
-    'http://127.0.0.1'
-]
-
-CSRF_COOKIE_SECURE = False
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://byajkhata-backend.onrender.com',
+    'http://localhost',
+    'http://127.0.0.1',
+    'http://localhost:8000',
+    'http://localhost:5173',
+    'http://localhost:59327',  # तुम जो actual port देख रहे हो वो भी
+]
+
+CSRF_COOKIE_SECURE = False
 
 TEMPLATES = [
     {
