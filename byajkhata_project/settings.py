@@ -76,6 +76,20 @@ CORS_ALLOW_METHODS = [
 ]
 
 
+# ✅ CSRF Settings
+CSRF_TRUSTED_ORIGINS = [
+    "https://byajkhata-backend.onrender.com",
+    "https://byajkhata-frontend.onrender.com",
+    "http://localhost:59168",
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+]
+
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
